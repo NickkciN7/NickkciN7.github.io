@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>Wall Game</title>
+
+<!-- 
+Simple animation program.
+
+-Michael Weeks, October 2019
+-->
+
+<script type="application/javascript">
+// <![CDATA[
+var INTERVAL = 50;
+var DEBUG = false; //true;
+
+var canvas;             // The canvas shown on the page.
+var ctx;                // The context, used to access the canvas.
+
+
+//do I need this?
+/*var SpriteRow = 0;      // Row of the graphic to show
+var SpriteCol = 0;      // Col of the graphic to show
+var MaxSpriteRow = 8;   // How many rows of images
+var MaxSpriteCol = 8;  // How many columns of images
+*/
+
+
+var characterX =0;  
+var characterY =0;
+var characterWidth = 30;   // Width, Height of each subimage
+var characterHeight = 30; //32x26 keeps original ratio
+
+var characterImage = new Image();   //pounce
+characterImage.src   = "pounce.png";
+
+var wallSprite = new Image();   //wall
+wallSprite.src   = "sprite.png";
+var wallVals = [];
+var wallWidth = 30;
+var wallHeight = 30;
+
+// Set up a timer to execute every 50 ms.
+// Begin code from 
+//   http://www.w3schools.com/jsref/met_win_setinterval.asp
+var myInterval = self.setInterval("Tick()", INTERVAL);
+// End code from www.w3schools.com
+
+var walls = 12;
+function eraseSprite() {
+  ctx.clearRect(characterX-10, characterY-10, characterWidth+20, characterHeight+20);
+  makeWall(50, 0, 7);    //lol i feel like this is a bad solution to the erase problem
+  makeWall(50, 300, 6);
+  makeWall(125, 150, 5);
+  makeWall(200, 0, 4);
+  makeWall(200, 200, 10);
+  makeWall(275, 0, 1);
+  makeWall(275, 70, 7);
+  makeWall(275, 325, 6);
+  makeWall(350, 0, 14);
+  makeWall(425, 45, 15);
+  
+  makeWall(610, 0, 8);
+  makeWall(610, 300, 6);
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "red";
+  ctx.fillText("GOAL", 580, 280);
+}
+
+
+function drawSprite() {
+  ctx.drawImage(characterImage, characterX, characterY, characterWidth, characterHeight);
+}
+
+
+function Tick() {
+  // Erase the sprite from its current location.
+  eraseSprite();
+  // Show a new image
+  drawSprite();
+}
+
+var count = 0;
+function makeWall(x ,begY, numberWalls){      //so no need to say int begY. only makes vertical walls. ONLY MAKE IN MULTIPLES OF 5
+  if(count < walls){    //did this since makeWall keeps getting called in erase function
+    wallVals.push([x, begY, numberWalls]);
+    count++; 
+  }
+  for(i = 0; i < numberWalls; i++){
+    ctx.drawImage(wallSprite,30,0,30,30,x,(begY+i*30),30,30);
+  }
+}
+
+function loadComplete() {
+  console.log("Load is complete."); 
+  canvas = document.getElementById("theCanvas");
+  ctx = canvas.getContext("2d");   //don't need the make wall here since its in erase. if the erase function was perfect I wouldn't need to remake the walls everytime though.
+}
+// What to do when the user presses a key.
+
+var rightD=0;
+var leftD=1;
+var upD=2;
+var downD=3;
+function notCollision(direction){
+  switch(direction){
+    case rightD:
+      //if( (characterX+characterWidth+5) == 100  &&  ( (50-characterHeight) < characterY & characterY < (50 + 7*characterHeight) ) ){   //100, 50, 7
+      
+      for(i = 0; i < walls; i++){
+        if( (characterX+characterWidth+5) == (wallVals[i][0])  &&  ( ((wallVals[i][1])-characterHeight-5) < characterY & characterY < ((wallVals[i][1]) + (wallVals[i][2])*wallHeight)+5 ))
+        {
+         return false;
+        }
+      }
+      return true;
+      break;
+    case leftD:
+      for(i = 0; i < walls; i++){
+        if( (characterX-5) == (wallVals[i][0])+wallWidth  &&  ( ((wallVals[i][1])-characterHeight-5) < characterY & characterY < ((wallVals[i][1]) + (wallVals[i][2])*wallHeight)+5 ))  //same y val intervals as for right direction
+        {
+         return false;
+        }
+      }
+      return true;
+      break;
+    case upD:
+      for(i = 0; i < walls; i++){
+        if( (characterY-5) == (wallVals[i][1])+(wallVals[i][2])*wallHeight   &&  ( ((wallVals[i][0])-characterWidth-5) < characterX & characterX < ((wallVals[i][0]) +wallWidth+5 )) )
+        {
+         return false;
+        }
+      }
+      return true;
+      break;
+    case downD:
+      for(i = 0; i < walls; i++){
+        if( (characterY+characterHeight+5) == (wallVals[i][1])   &&  ( ((wallVals[i][0])-characterWidth-5) < characterX & characterX < ((wallVals[i][0]) +wallWidth+5 )) )
+        {
+         return false;
+        }
+      }
+      return true;
+      break;
+  }
+}
+function whenKeyPressed(key) {
+  switch (key) {
+    case 28:  // Right arrow was pressed 
+      //if((characterX+5) <= 608){characterX += 5}
+      if((characterX+5) <= 608){
+        if(notCollision(rightD)){
+          characterX += 5;
+        }
+      }
+      if((characterX+characterWidth+5) == 640){
+        document.body.style.backgroundColor = "green";
+      }
+      break;
+    case 29:  // Left arrow, ASCII 29 
+      if((characterX-5) >= 0){
+        if(notCollision(leftD)){
+          characterX -= 5;
+        }
+      }
+      break;
+    case 30:  // Up arrow was pressed 
+      if((characterY-5) >= 0){
+        if(notCollision(upD)){
+          characterY -= 5;
+        }
+      }
+      break;
+    case 31:  // Down arrow was pressed
+      if((characterY+5) <= 454){
+        if(notCollision(downD)){
+          characterY += 5;
+        }
+      }
+      break;
+  }
+}
+///]]>
+</script>
+
+</head>
+<body onload="loadComplete()" bgcolor="#0f0000" text="#ffffff">
+
+<center>
+  <canvas id="theCanvas" tabindex="1" width="640" height="480"></canvas>
+<!--<h2>Press up/down to see different rows</h2>-->
+</center>
+
+<script type="application/javascript">
+  //
+  // Set up a function to handle key-presses.
+  //
+  // This should work across most browsers.
+  document['onkeydown'] = function(event) {
+    event = event || window.event;
+    var key = event.which || event.cursor;
+    // Check for a special key value, and map it to ASCII.
+    switch (key) {
+      case 37:  // Left arrow, ASCII 29 
+        key = 29;
+        break;
+      case 38:  // Up arrow, ASCII 30
+        key = 30;
+        break;
+      case 39:  // Right arrow, ASCII 28  
+        key = 28;
+        break; 
+      case 40:  // Down arrow, ASCII 31
+        key = 31;
+        break;
+    }
+    //document.getElementById("keydown").innerHTML =
+    //  " key Down event, keycode " + key;
+    whenKeyPressed(key);
+  };
+</script>
+
+
+</body></html>
