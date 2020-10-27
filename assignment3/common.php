@@ -6,6 +6,7 @@
 		echo "where meek geeks meet";
 		echo '</header>';
 	}
+	//I have 3 things that are "footers" instead of 1 because I didn't want to have a back to front page on index which is the front page
 	function footerFunc(){
 		echo '<footer>';
 		echo 'This page is for single nerds to meet and date each other! Type in';
