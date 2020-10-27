@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title></title>
+	<meta charset="UTF-8">
+	<title>signup</title>
 	<link href="https://codd.cs.gsu.edu/~lhenry23/Asg03/nerdieluv.css" type="text/css" rel="stylesheet">
 </head>
 <body>
@@ -36,8 +37,9 @@
 	<br><br><br>
 	<!--Show the footer-->
 	<?php 
-	footerFunc();
-	backToFP();
+		footerFunc();
+		backToFP();
+		validatorImages();
 	?>
 
 </body>

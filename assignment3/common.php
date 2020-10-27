@@ -19,6 +19,16 @@
 	}
 	function backToFP(){
 		echo '<br /><a href="index.php"><img src="imgs/back.png">Back to front page</a>';
+	}
+	function validatorImages(){
+		echo 
+		'
+		<br /><br /><br />
+		<div id="w3c">
+			<a href="https://validator.w3.org/"><img src="imgs/w3c-xhtml.png" alt="xhtml validator image"></a>
+			<a href="http://jigsaw.w3.org/css-validator/"><img src="imgs/w3c-css.png" alt="css validator image"></a>
+		</div>
+		';
 	}	
 ?>
 
